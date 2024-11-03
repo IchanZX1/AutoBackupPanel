@@ -57,11 +57,19 @@ backup_panel() {
   echo -e "${BLUE}[+] =============================================== [+]${NC}"
   echo -e ""
 
-  # Define the database name (modify as needed)
+  # Define the database name
   read -p "Masukkan nama database: " nama_database
-  mysqldump -u root -p "$nama_database" > /var/www/pterodactyl/panel.sql
+  read -p "Masukkan password MySQL (Tekan Enter jika tidak ada): " -s mysql_password
+  echo
 
-  # Backup commands
+  # Check if password is provided or empty
+  if [ -z "$mysql_password" ]; then
+    mysqldump -u root --password= "$nama_database" > /var/www/pterodactyl/panel.sql
+  else
+    mysqldump -u root --password="$mysql_password" "$nama_database" > /var/www/pterodactyl/panel.sql
+  fi
+
+  # Backup other necessary directories
   tar -cvpzf backup.tar.gz /etc/letsencrypt /var/www/pterodactyl /etc/nginx/sites-available/pterodactyl.conf
   tar -cvzf node.tar.gz /var/lib/pterodactyl /etc/pterodactyl
 
@@ -82,17 +90,25 @@ migrate_panel() {
   echo -e "${BLUE}[+] =============================================== [+]${NC}"
   echo -e ""
 
-  # Get the IP address and database name from the user
+  # Get IP and database name
   read -p "Masukkan IP VPS sumber: " ip_vps
   read -p "Masukkan nama database: " nama_database
+  read -p "Masukkan password MySQL (Tekan Enter jika tidak ada): " -s mysql_password
+  echo
 
-  # Migrate commands
+  # Transfer backup files and extract
   scp root@"$ip_vps":/root/{backup.tar.gz,node.tar.gz} /
   tar -xvpzf /backup.tar.gz -C /
   tar -xvzf /node.tar.gz -C /
 
-  # Import SQL dump and restart services
-  mysql -u root -p "$nama_database" < /var/www/pterodactyl/panel.sql
+  # Import SQL dump with or without password
+  if [ -z "$mysql_password" ]; then
+    mysql -u root --password= "$nama_database" < /var/www/pterodactyl/panel.sql
+  else
+    mysql -u root --password="$mysql_password" "$nama_database" < /var/www/pterodactyl/panel.sql
+  fi
+
+  # Restart services
   sudo systemctl restart nginx
   sudo systemctl restart wings
   sudo systemctl restart mysql
