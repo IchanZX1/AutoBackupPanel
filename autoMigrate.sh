@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Color
-BLUE='\033[0;34m'       
+# Colors
+BLUE='\033[0;34m'
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
@@ -17,8 +17,8 @@ display_welcome() {
   echo -e "${BLUE}[+]                                                 [+]${NC}"
   echo -e "${RED}[+] =============================================== [+]${NC}"
   echo -e ""
-  echo -e "script ini di buat untuk mempermudah melakukan Migrasi pterodactyl,"
-  echo -e "Tidak ada yang harus diperjual belikan karena script ini saya buat Khusus Para pengguna Pterodactyl."
+  echo -e "script ini dibuat untuk mempermudah melakukan migrasi Pterodactyl."
+  echo -e "Tidak ada yang harus diperjualbelikan karena script ini khusus untuk pengguna Pterodactyl."
   echo -e ""
   echo -e "𝗪𝗛𝗔𝗧𝗦𝗔𝗣𝗣 :"
   echo -e "NDAK PUNYA"
@@ -29,77 +29,81 @@ display_welcome() {
   sleep 4
   clear
 }
-#Check user token
+
+# Check user token
 check_token() {
-  echo -e "                                                       "
+  echo -e ""
   echo -e "${BLUE}[+] =============================================== [+]${NC}"
   echo -e "${BLUE}[+]               LICENSI BY ICHANZX             [+]${NC}"
   echo -e "${BLUE}[+] =============================================== [+]${NC}"
-  echo -e "                                                       "
+  echo -e ""
   echo -e "${YELLOW}MASUKAN AKSES TOKEN :${NC}"
   read -r USER_TOKEN
 
   if [ "$USER_TOKEN" = "ichanzxcoderid" ]; then
-    echo -e "${GREEN}AKSES BERHASIL${NC}}"
+    echo -e "${GREEN}AKSES BERHASIL${NC}"
   else
-    echo -e "${GREEN}Buy dulu Weh Ke IchanZX https://t.me/ichanxd${NC}"
+    echo -e "${RED}Akses gagal. Hubungi IchanZX di https://t.me/ichanxd${NC}"
     exit 1
   fi
   clear
 }
 
-#Backup NodeJS MYSQL PANEL
+# Backup NodeJS MYSQL PANEL
 backup_panel() {
-  echo -e "                                                       "
+  echo -e ""
   echo -e "${BLUE}[+] =============================================== [+]${NC}"
   echo -e "${BLUE}[+]               MEMULAI BACKUP PANEL                 [+]${NC}"
   echo -e "${BLUE}[+] =============================================== [+]${NC}"
-  echo -e "                                                       "
+  echo -e ""
 
-mysqldump -u root -p nama_database > /var/www/pterodactyl/panel.sqL
-\n
-tar -cvpzf backup.tar.gz /etc/letsencrypt /var/www/pterodactyl /etc/nginx/sites-available/pterodactyl.conf
-tar -cvzf node.tar.gz /var/lib/pterodactyl /etc/pterodactyl
-EOF
+  # Define the database name (modify as needed)
+  read -p "Masukkan nama database: " nama_database
+  mysqldump -u root -p "$nama_database" > /var/www/pterodactyl/panel.sql
 
+  # Backup commands
+  tar -cvpzf backup.tar.gz /etc/letsencrypt /var/www/pterodactyl /etc/nginx/sites-available/pterodactyl.conf
+  tar -cvzf node.tar.gz /var/lib/pterodactyl /etc/pterodactyl
 
-  echo -e "                                                       "
+  echo -e ""
   echo -e "${GREEN}[+] =============================================== [+]${NC}"
   echo -e "${GREEN}[+]               BACKUP PANEL SUKSES             [+]${NC}"
   echo -e "${GREEN}[+] =============================================== [+]${NC}"
-  echo -e "                                                       "
+  echo -e ""
   sleep 2
   clear
-  exit 0
 }
 
-#Memindahkan Panel Dan Set MYSQL
+# Migrate Panel and Set MYSQL
 migrate_panel() {
-  echo -e "                                                       "
+  echo -e ""
   echo -e "${BLUE}[+] =============================================== [+]${NC}"
   echo -e "${BLUE}[+]               MEMULAI MIGRASI PANEL                 [+]${NC}"
   echo -e "${BLUE}[+] =============================================== [+]${NC}"
-  echo -e "                                                       "
+  echo -e ""
 
-# Minta input token dari pengguna
-scp root@$ip_vps:/root/{backup.tar.gz,node.tar.gz} /
-tar -xvpzf /backup.tar.gz -C /
-systemctl restart nginx
-tar -xvzf /node.tar.gz -C /
-mysql -u root -p $nama_database < /var/www/pterodactyl/panel.sql
-sudo systemctl restart wings
-sudo systemctl restart mysql
-EOF
+  # Get the IP address and database name from the user
+  read -p "Masukkan IP VPS sumber: " ip_vps
+  read -p "Masukkan nama database: " nama_database
 
+  # Migrate commands
+  scp root@"$ip_vps":/root/{backup.tar.gz,node.tar.gz} /
+  tar -xvpzf /backup.tar.gz -C /
+  tar -xvzf /node.tar.gz -C /
 
-  echo -e "                                                       "
+  # Import SQL dump and restart services
+  mysql -u root -p "$nama_database" < /var/www/pterodactyl/panel.sql
+  sudo systemctl restart nginx
+  sudo systemctl restart wings
+  sudo systemctl restart mysql
+
+  echo -e ""
   echo -e "${GREEN}[+] =============================================== [+]${NC}"
   echo -e "${GREEN}[+]               MIGRASI PANEL SUKSES             [+]${NC}"
   echo -e "${GREEN}[+] =============================================== [+]${NC}"
-  echo -e "                                                       "
+  echo -e ""
   sleep 2
   clear
-  exit 0
 }
 
 # Main script
@@ -108,14 +112,14 @@ check_token
 
 while true; do
   clear
-  echo -e "                                                       "
+  echo -e ""
   echo -e "${BLUE}[+] =============================================== [+]${NC}"
   echo -e "${BLUE}[+]               PILIH TOOLS DIBAWAH                 [+]${NC}"
   echo -e "${BLUE}[+] =============================================== [+]${NC}"
-  echo -e "                                                       "
+  echo -e ""
   echo -e "SELECT OPTION :"
-  echo "1. backup panel"
-  echo "2. pindahkan panel"
+  echo "1. Backup panel"
+  echo "2. Pindahkan panel"
   echo "x. Exit"
   echo -e "Masukkan pilihan (1/2/x):"
   read -r MENU_CHOICE
