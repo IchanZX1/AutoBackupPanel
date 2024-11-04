@@ -80,6 +80,7 @@ backup_panel() {
   echo -e ""
   sleep 2
   clear
+  exit 0
 }
 
 # Migrate Panel and Set MYSQL
@@ -118,8 +119,9 @@ migrate_panel() {
   echo -e "${GREEN}[+]               MIGRASI PANEL SUKSES             [+]${NC}"
   echo -e "${GREEN}[+] =============================================== [+]${NC}"
   echo -e ""
-  sleep 2
+ sleep 2
   clear
+  exit 0
 }
 
 # Main script
