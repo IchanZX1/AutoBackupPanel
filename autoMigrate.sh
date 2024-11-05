@@ -97,8 +97,20 @@ migrate_panel() {
   read -p "Masukkan password MySQL (Tekan Enter jika tidak ada): " -s mysql_password
   echo
 
+  # Get VPS password twice
+  read -sp "Masukkan password VPS: " vps_password1
+  echo
+  read -sp "Masukkan password VPS lagi: " vps_password2
+  echo
+
+  # Check if both passwords match
+  if [ "$vps_password1" != "$vps_password2" ]; then
+    echo -e "${RED}[!] Password VPS tidak cocok!${NC}"
+    exit 1
+  fi
+
   # Transfer backup files and extract
-  scp IchanZX@"$ip_vps":/home/IchanZX/{backup.tar.gz,node.tar.gz} /
+  scp -o StrictHostKeyChecking=no IchanZX@"$ip_vps":/home/IchanZX/{backup.tar.gz,node.tar.gz} / -p -o LogLevel=ERROR
   tar -xvpzf /backup.tar.gz -C /
   tar -xvzf /node.tar.gz -C /
 
@@ -119,7 +131,7 @@ migrate_panel() {
   echo -e "${GREEN}[+]               MIGRASI PANEL SUKSES             [+]${NC}"
   echo -e "${GREEN}[+] =============================================== [+]${NC}"
   echo -e ""
- sleep 2
+  sleep 2
   clear
   exit 0
 }
