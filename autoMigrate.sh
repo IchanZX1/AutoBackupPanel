@@ -98,7 +98,7 @@ migrate_panel() {
   echo
 
   # Transfer backup files and extract
-  scp root@"$ip_vps":/root/{backup.tar.gz,node.tar.gz} /
+  scp IchanZX@"$ip_vps":/home/IchanZX/{backup.tar.gz,node.tar.gz} /
   tar -xvpzf /backup.tar.gz -C /
   tar -xvzf /node.tar.gz -C /
 
