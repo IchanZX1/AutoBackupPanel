@@ -114,11 +114,17 @@ migrate_panel() {
   tar -xvpzf /backup.tar.gz -C /
   tar -xvzf /node.tar.gz -C /
 
-  # Import SQL dump with or without password
+  # Import SQL dump using MariaDB commands
   if [ -z "$mysql_password" ]; then
-    mysql -u root --password= "$nama_database" < /var/www/pterodactyl/panel.sql
+    mysql -u root <<EOF
+USE $nama_database;
+SOURCE /var/www/pterodactyl/panel.sql;
+EOF
   else
-    mysql -u root --password="$mysql_password" "$nama_database" < /var/www/pterodactyl/panel.sql
+    mysql -u root -p"$mysql_password" <<EOF
+USE $nama_database;
+SOURCE /var/www/pterodactyl/panel.sql;
+EOF
   fi
 
   # Restart services
