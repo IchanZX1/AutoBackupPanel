@@ -115,7 +115,7 @@ migrate_panel() {
   tar -xvpzf /backup.tar.gz -C /
   tar -xvzf /node.tar.gz -C /
 
-sleep 2500
+sleep 60
   
   # Restart services
   sudo systemctl restart nginx
