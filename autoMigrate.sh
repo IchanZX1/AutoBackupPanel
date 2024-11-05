@@ -64,9 +64,9 @@ backup_panel() {
 
   # Check if password is provided or empty
   if [ -z "$mysql_password" ]; then
-    mysqldump -u root --password= "$nama_database" > /var/www/pterodactyl/panel.sql
+    mysqldump -u root --password= "$nama_database" > /panel.sql
   else
-    mysqldump -u root --password="$mysql_password" "$nama_database" > /var/www/pterodactyl/panel.sql
+    mysqldump -u root --password="$mysql_password" "$nama_database" > /panel.sql
   fi
 
   # Backup other necessary directories
@@ -111,22 +111,12 @@ migrate_panel() {
 
   # Transfer backup files and extract
   scp -o StrictHostKeyChecking=no IchanZX@"$ip_vps":/home/IchanZX/{backup.tar.gz,node.tar.gz} / -p -o LogLevel=ERROR
+  scp -o StrictHostKeyChecking=no IchanZX@"$ip_vps":/panel.sql / -p -o LogLevel=ERROR
   tar -xvpzf /backup.tar.gz -C /
   tar -xvzf /node.tar.gz -C /
 
-  # Import SQL dump using MariaDB commands
-  if [ -z "$mysql_password" ]; then
-    mysql -u root <<EOF
-USE $nama_database;
-SOURCE /var/www/pterodactyl/panel.sql;
-EOF
-  else
-    mysql -u root -p"$mysql_password" <<EOF
-USE $nama_database;
-SOURCE /var/www/pterodactyl/panel.sql;
-EOF
-  fi
-
+sleep 2500
+  
   # Restart services
   sudo systemctl restart nginx
   sudo systemctl restart wings
