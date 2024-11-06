@@ -109,13 +109,18 @@ migrate_panel() {
     exit 1
   fi
 
-  # Transfer backup files and extract
-  scp -o StrictHostKeyChecking=no IchanZX@"$ip_vps":/home/IchanZX/{backup.tar.gz,node.tar.gz} / -p -o LogLevel=ERROR
-  scp -o StrictHostKeyChecking=no IchanZX@"$ip_vps":/panel.sql / -p -o LogLevel=ERROR
-  tar -xvpzf /backup.tar.gz -C /
-  tar -xvzf /node.tar.gz -C /
+  # Transfer backup files and check if the transfer was successful
+  echo -e "${BLUE}[+] Mentransfer file backup dari $ip_vps ...${NC}"
+  scp -o StrictHostKeyChecking=no -o LogLevel=ERROR IchanZX@"$ip_vps":/home/IchanZX/backup.tar.gz / || { echo -e "${RED}[!] Gagal mentransfer backup.tar.gz${NC}"; exit 1; }
+  scp -o StrictHostKeyChecking=no -o LogLevel=ERROR IchanZX@"$ip_vps":/home/IchanZX/node.tar.gz / || { echo -e "${RED}[!] Gagal mentransfer node.tar.gz${NC}"; exit 1; }
+  scp -o StrictHostKeyChecking=no -o LogLevel=ERROR IchanZX@"$ip_vps":/home/IchanZX/panel.sql / || { echo -e "${RED}[!] Gagal mentransfer panel.sql${NC}"; exit 1; }
 
-sleep 60
+  # Extract the transferred files
+  echo -e "${BLUE}[+] Mengekstrak file backup ...${NC}"
+  tar -xvpzf /backup.tar.gz -C / || { echo -e "${RED}[!] Gagal mengekstrak backup.tar.gz${NC}"; exit 1; }
+  tar -xvzf /node.tar.gz -C / || { echo -e "${RED}[!] Gagal mengekstrak node.tar.gz${NC}"; exit 1; }
+
+  sleep 60
   
   # Restart services
   sudo systemctl restart nginx
@@ -127,9 +132,6 @@ sleep 60
   echo -e "${GREEN}[+]               MIGRASI PANEL SUKSES             [+]${NC}"
   echo -e "${GREEN}[+] =============================================== [+]${NC}"
   echo -e ""
-  sleep 2
-  clear
-  exit 0
 }
 
 # Main script
