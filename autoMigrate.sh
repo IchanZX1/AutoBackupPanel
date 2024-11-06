@@ -92,40 +92,46 @@ migrate_panel() {
   echo -e ""
 
   # Get IP and database name
-  read -p "Masukkan IP VPS sumber: " ip_vps
-  read -p "Masukkan nama database: " nama_database
-  read -p "Masukkan password MySQL (Tekan Enter jika tidak ada): " -s mysql_password
+  echo -e "[INFO] Masukkan IP VPS sumber:" 
+  read -p "IP VPS: " ip_vps
+  echo -e "[INFO] Masukkan nama database:" 
+  read -p "Nama Database: " nama_database
+  echo -e "[INFO] Masukkan password MySQL (Tekan Enter jika tidak ada):" 
+  read -s -p "Password MySQL: " mysql_password
   echo
 
   # Get VPS password twice
-  read -sp "Masukkan password VPS: " vps_password1
+  echo -e "[INFO] Masukkan password VPS:" 
+  read -sp "Password VPS: " vps_password1
   echo
-  read -sp "Masukkan password VPS lagi: " vps_password2
+  echo -e "[INFO] Masukkan password VPS lagi:" 
+  read -sp "Password VPS Lagi: " vps_password2
   echo
 
   # Check if both passwords match
   if [ "$vps_password1" != "$vps_password2" ]; then
-    echo -e "${RED}[!] Password VPS tidak cocok!${NC}"
+    echo -e "${RED}[ERROR] Password VPS tidak cocok!${NC}"
     exit 1
   fi
 
   # Transfer backup files and check if the transfer was successful
-  echo -e "${BLUE}[+] Mentransfer file backup dari $ip_vps ...${NC}"
-  scp -o StrictHostKeyChecking=no -o LogLevel=ERROR IchanZX@"$ip_vps":/home/IchanZX/backup.tar.gz / || { echo -e "${RED}[!] Gagal mentransfer backup.tar.gz${NC}"; exit 1; }
-  scp -o StrictHostKeyChecking=no -o LogLevel=ERROR IchanZX@"$ip_vps":/home/IchanZX/node.tar.gz / || { echo -e "${RED}[!] Gagal mentransfer node.tar.gz${NC}"; exit 1; }
-  scp -o StrictHostKeyChecking=no -o LogLevel=ERROR IchanZX@"$ip_vps":/panel.sql / || { echo -e "${RED}[!] Gagal mentransfer panel.sql${NC}"; exit 1; }
+  echo -e "${BLUE}[INFO] Mentransfer file backup dari $ip_vps ...${NC}"
+  scp -o StrictHostKeyChecking=no -o LogLevel=ERROR IchanZX@"$ip_vps":/home/IchanZX/backup.tar.gz / || { echo -e "${RED}[ERROR] Gagal mentransfer backup.tar.gz${NC}"; exit 1; }
+  scp -o StrictHostKeyChecking=no -o LogLevel=ERROR IchanZX@"$ip_vps":/home/IchanZX/node.tar.gz / || { echo -e "${RED}[ERROR] Gagal mentransfer node.tar.gz${NC}"; exit 1; }
+  scp -o StrictHostKeyChecking=no -o LogLevel=ERROR IchanZX@"$ip_vps":/panel.sql / || { echo -e "${RED}[ERROR] Gagal mentransfer panel.sql${NC}"; exit 1; }
 
   # Extract the transferred files
-  echo -e "${BLUE}[+] Mengekstrak file backup ...${NC}"
-  tar -xvpzf /backup.tar.gz -C / || { echo -e "${RED}[!] Gagal mengekstrak backup.tar.gz${NC}"; exit 1; }
-  tar -xvzf /node.tar.gz -C / || { echo -e "${RED}[!] Gagal mengekstrak node.tar.gz${NC}"; exit 1; }
+  echo -e "[INFO] Mengekstrak file backup ...${NC}"
+  tar -xvpzf /backup.tar.gz -C / || { echo -e "${RED}[ERROR] Gagal mengekstrak backup.tar.gz${NC}"; exit 1; }
+  tar -xvzf /node.tar.gz -C / || { echo -e "${RED}[ERROR] Gagal mengekstrak node.tar.gz${NC}"; exit 1; }
 
   sleep 60
   
   # Restart services
-  sudo systemctl restart nginx
-  sudo systemctl restart wings
-  sudo systemctl restart mysql
+  echo -e "[INFO] Restarting services..."
+  sudo systemctl restart nginx || { echo -e "${RED}[ERROR] Gagal restart nginx${NC}"; exit 1; }
+  sudo systemctl restart wings || { echo -e "${RED}[ERROR] Gagal restart wings${NC}"; exit 1; }
+  sudo systemctl restart mysql || { echo -e "${RED}[ERROR] Gagal restart mysql${NC}"; exit 1; }
 
   echo -e ""
   echo -e "${GREEN}[+] =============================================== [+]${NC}"
