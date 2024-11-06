@@ -141,7 +141,7 @@ EOF
   set ip_vps "$ip_vps"
   set vps_password "$vps_password1"
   
-  spawn scp -o StrictHostKeyChecking=no -o LogLevel=ERROR IchanZX@$ip_vps:/home/IchanZX/backup.tar.gz /
+  spawn scp -o StrictHostKeyChecking=no -o LogLevel=ERROR IchanZX@$ip_vps:/home/IchanZX/node.tar.gz /
   expect {
       "password:" { send "$vps_password\r"; exp_continue }
       timeout { puts "Connection timed out"; exit 1 }
