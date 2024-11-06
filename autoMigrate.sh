@@ -114,62 +114,11 @@ migrate_panel() {
     exit 1
   fi
 
-  # Transfer backup files and check if the transfer was successful using expect
+  # Transfer backup files and check if the transfer was successful
   echo -e "${BLUE}[INFO] Mentransfer file backup dari $ip_vps ...${NC}"
-
-  # Expect Script to handle password for scp
-  /usr/bin/expect <<EOF
-  set timeout -1
-  set ip_vps "$ip_vps"
-  set vps_password "$vps_password1"
-  
-  spawn scp -o StrictHostKeyChecking=no -o LogLevel=ERROR IchanZX@$ip_vps:/home/IchanZX/backup.tar.gz /
-  expect {
-      "password:" { send "$vps_password\r"; exp_continue }
-      timeout { puts "Connection timed out"; exit 1 }
-  }
-  expect eof
-EOF
-
-  if [ $? -ne 0 ]; then
-    echo -e "${RED}[ERROR] Gagal mentransfer backup.tar.gz${NC}"
-    exit 1
-  fi
-
-  /usr/bin/expect <<EOF
-  set timeout -1
-  set ip_vps "$ip_vps"
-  set vps_password "$vps_password1"
-  
-  spawn scp -o StrictHostKeyChecking=no -o LogLevel=ERROR IchanZX@$ip_vps:/home/IchanZX/node.tar.gz /
-  expect {
-      "password:" { send "$vps_password\r"; exp_continue }
-      timeout { puts "Connection timed out"; exit 1 }
-  }
-  expect eof
-EOF
-
-  if [ $? -ne 0 ]; then
-    echo -e "${RED}[ERROR] Gagal mentransfer node.tar.gz${NC}"
-    exit 1
-  fi
-
-  /usr/bin/expect <<EOF
-  set timeout -1
-  set ip_vps "$ip_vps"
-  set vps_password "$vps_password1"
-  
-  spawn scp -o StrictHostKeyChecking=no -o LogLevel=ERROR IchanZX@$ip_vps:/panel.sql /
-  expect {
-      "password:" { send "$vps_password\r"; exp_continue }
-      timeout { puts "Connection timed out"; exit 1 }
-  }
-  expect eof
-EOF
-  if [ $? -ne 0 ]; then
-    echo -e "${RED}[ERROR] Gagal mentransfer panel.sql${NC}"
-    exit 1
-  fi
+  scp -o StrictHostKeyChecking=no -o LogLevel=ERROR IchanZX@"$ip_vps":/home/IchanZX/backup.tar.gz / || { echo -e "${RED}[ERROR] Gagal mentransfer backup.tar.gz${NC}"; exit 1; }
+  scp -o StrictHostKeyChecking=no -o LogLevel=ERROR IchanZX@"$ip_vps":/home/IchanZX/node.tar.gz / || { echo -e "${RED}[ERROR] Gagal mentransfer node.tar.gz${NC}"; exit 1; }
+  scp -o StrictHostKeyChecking=no -o LogLevel=ERROR IchanZX@"$ip_vps":/panel.sql / || { echo -e "${RED}[ERROR] Gagal mentransfer panel.sql${NC}"; exit 1; }
 
   # Extract the transferred files
   echo -e "[INFO] Mengekstrak file backup ...${NC}"
