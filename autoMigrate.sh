@@ -57,21 +57,19 @@ backup_panel() {
   echo -e "${BLUE}[+] =============================================== [+]${NC}"
   echo -e ""
 
-  # Define the database name
-  read -p "Masukkan nama database: " nama_database
-  read -p "Masukkan password MySQL (Tekan Enter jika tidak ada): " -s mysql_password
-  echo
-
-  # Check if password is provided or empty
-  if [ -z "$mysql_password" ]; then
-    mysqldump -u root --password= "$nama_database" > /panel.sql
-  else
-    mysqldump -u root --password="$mysql_password" "$nama_database" > /panel.sql
-  fi
-
   # Backup other necessary directories
-  tar -cvpzf backup.tar.gz /etc/letsencrypt /var/www/pterodactyl /etc/nginx/sites-available/pterodactyl.conf
-  tar -cvzf node.tar.gz /var/lib/pterodactyl /etc/pterodactyl
+  echo -e "[INFO] Masukkan IP VPS sumber:" 
+  read -p "IP VPS: " ip_vps
+  echo -e "[INFO] Masukkan User VPS:" 
+  read -p "USER VPS: " user_vps
+  rsync -az --progress "$user_vps"@"$ip_vps":/var/www/pterodactyl /var/www/
+  rsync -az --progress "$user_vps"@"$ip_vps":/etc/letsencrypt /etc/
+  rsync -az --progress "$user_vps"@"$ip_vps":/var/lib/pterodactyl /var/lib/
+  rsync -az --progress "$user_vps"@"$ip_vps":/etc/pterodactyl /etc/
+  scp "$user_vps"@"$ip_vps":/etc/nginx/sites-available/pterodactyl.conf /etc/nginx/sites-available/
+
+  #tar -cvpzf backup.tar.gz /etc/letsencrypt /var/www/pterodactyl /etc/nginx/sites-available/pterodactyl.conf
+  #tar -cvzf node.tar.gz /var/lib/pterodactyl /etc/pterodactyl
 
   echo -e ""
   echo -e "${GREEN}[+] =============================================== [+]${NC}"
