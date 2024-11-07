@@ -57,6 +57,36 @@ backup_panel() {
   echo -e "${BLUE}[+] =============================================== [+]${NC}"
   echo -e ""
 
+  # Define the database name
+  read -p "Masukkan nama database: " nama_database
+  read -p "Masukkan password MySQL (Tekan Enter jika tidak ada): " -s mysql_password
+  echo
+
+  # Check if password is provided or empty
+  if [ -z "$mysql_password" ]; then
+    mysqldump -u root --password= "$nama_database" > /panel.sql
+  else
+    mysqldump -u root --password="$mysql_password" "$nama_database" > /panel.sql
+  fi
+
+  echo -e ""
+  echo -e "${GREEN}[+] =============================================== [+]${NC}"
+  echo -e "${GREEN}[+]               BACKUP PANEL SUKSES             [+]${NC}"
+  echo -e "${GREEN}[+] =============================================== [+]${NC}"
+  echo -e ""
+  sleep 2
+  clear
+  exit 0
+}
+
+# Migrate Panel and Set MYSQL
+migrate_panel() {
+  echo -e ""
+  echo -e "${BLUE}[+] =============================================== [+]${NC}"
+  echo -e "${BLUE}[+]               MEMULAI MIGRASI PANEL                 [+]${NC}"
+  echo -e "${BLUE}[+] =============================================== [+]${NC}"
+  echo -e ""
+
   # Backup other necessary directories
   echo -e "[INFO] Masukkan IP VPS sumber:" 
   read -p "IP VPS: " ip_vps
@@ -79,66 +109,6 @@ backup_panel() {
 
   #tar -cvpzf backup.tar.gz /etc/letsencrypt /var/www/pterodactyl /etc/nginx/sites-available/pterodactyl.conf
   #tar -cvzf node.tar.gz /var/lib/pterodactyl /etc/pterodactyl
-
-  echo -e ""
-  echo -e "${GREEN}[+] =============================================== [+]${NC}"
-  echo -e "${GREEN}[+]               BACKUP PANEL SUKSES             [+]${NC}"
-  echo -e "${GREEN}[+] =============================================== [+]${NC}"
-  echo -e ""
-  sleep 2
-  clear
-  exit 0
-}
-
-# Migrate Panel and Set MYSQL
-migrate_panel() {
-  echo -e ""
-  echo -e "${BLUE}[+] =============================================== [+]${NC}"
-  echo -e "${BLUE}[+]               MEMULAI MIGRASI PANEL                 [+]${NC}"
-  echo -e "${BLUE}[+] =============================================== [+]${NC}"
-  echo -e ""
-
-  # Get IP and database name
-  echo -e "[INFO] Masukkan IP VPS sumber:" 
-  read -p "IP VPS: " ip_vps
-  echo -e "[INFO] Masukkan nama database:" 
-  read -p "Nama Database: " nama_database
-  echo -e "[INFO] Masukkan password MySQL (Tekan Enter jika tidak ada):" 
-  read -s -p "Password MySQL: " mysql_password
-  echo
-
-  # Get VPS password twice
-  echo -e "[INFO] Masukkan password VPS:" 
-  read -sp "Password VPS: " vps_password1
-  echo
-  echo -e "[INFO] Masukkan password VPS lagi:" 
-  read -sp "Password VPS Lagi: " vps_password2
-  echo
-
-  # Check if both passwords match
-  if [ "$vps_password1" != "$vps_password2" ]; then
-    echo -e "${RED}[ERROR] Password VPS tidak cocok!${NC}"
-    exit 1
-  fi
-
-  # Transfer backup files and check if the transfer was successful
-  echo -e "${BLUE}[INFO] Mentransfer file backup dari $ip_vps ...${NC}"
-  scp -o StrictHostKeyChecking=no -o LogLevel=ERROR root@"$ip_vps":/root/backup.tar.gz / || { echo -e "${RED}[ERROR] Gagal mentransfer backup.tar.gz${NC}"; exit 1; }
-  scp -o StrictHostKeyChecking=no -o LogLevel=ERROR root@"$ip_vps":/root/node.tar.gz / || { echo -e "${RED}[ERROR] Gagal mentransfer node.tar.gz${NC}"; exit 1; }
-  scp -o StrictHostKeyChecking=no -o LogLevel=ERROR root@"$ip_vps":/panel.sql / || { echo -e "${RED}[ERROR] Gagal mentransfer panel.sql${NC}"; exit 1; }
-
-  # Extract the transferred files
-  echo -e "[INFO] Mengekstrak file backup ...${NC}"
-  tar -xvpzf /backup.tar.gz -C / || { echo -e "${RED}[ERROR] Gagal mengekstrak backup.tar.gz${NC}"; exit 1; }
-  tar -xvzf /node.tar.gz -C / || { echo -e "${RED}[ERROR] Gagal mengekstrak node.tar.gz${NC}"; exit 1; }
-  echo -e "[INFO] Masukkan Perintah MYSQL:" 
-  sleep 180
-  
-  # Restart services
-  echo -e "[INFO] Restarting services..."
-  sudo systemctl restart nginx || { echo -e "${RED}[ERROR] Gagal restart nginx${NC}"; exit 1; }
-  sudo systemctl restart wings || { echo -e "${RED}[ERROR] Gagal restart wings${NC}"; exit 1; }
-  sudo systemctl restart mysql || { echo -e "${RED}[ERROR] Gagal restart mysql${NC}"; exit 1; }
 
   echo -e ""
   echo -e "${GREEN}[+] =============================================== [+]${NC}"
