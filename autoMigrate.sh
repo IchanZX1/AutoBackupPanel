@@ -124,8 +124,8 @@ migrate_panel() {
   echo -e "[INFO] Mengekstrak file backup ...${NC}"
   tar -xvpzf /backup.tar.gz -C / || { echo -e "${RED}[ERROR] Gagal mengekstrak backup.tar.gz${NC}"; exit 1; }
   tar -xvzf /node.tar.gz -C / || { echo -e "${RED}[ERROR] Gagal mengekstrak node.tar.gz${NC}"; exit 1; }
-
-  sleep 60
+  echo -e "[INFO] Masukkan Perintah MYSQL:" 
+  sleep 180
   
   # Restart services
   echo -e "[INFO] Restarting services..."
@@ -138,6 +138,7 @@ migrate_panel() {
   echo -e "${GREEN}[+]               MIGRASI PANEL SUKSES             [+]${NC}"
   echo -e "${GREEN}[+] =============================================== [+]${NC}"
   echo -e ""
+  exit 0
 }
 
 # Main script
