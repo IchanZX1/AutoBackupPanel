@@ -69,6 +69,14 @@ backup_panel() {
   scp "$user_vps"@"$ip_vps":/etc/nginx/sites-available/pterodactyl.conf /etc/nginx/sites-available/ || { echo -e "${RED}[ERROR] Gagal mentransfer /etc/nginx/sites-available/pterodactyl.conf${NC}"; exit 1; }
   scp -o StrictHostKeyChecking=no -o LogLevel=ERROR "$user_vps"@"$ip_vps":/panel.sql / || { echo -e "${RED}[ERROR] Gagal mentransfer panel.sql${NC}"; exit 1; }
 
+  sleep 180
+  
+  # Restart services
+  echo -e "[INFO] Restarting services..."
+  sudo systemctl restart nginx || { echo -e "${RED}[ERROR] Gagal restart nginx${NC}"; exit 1; }
+  #sudo systemctl restart wings || { echo -e "${RED}[ERROR] Gagal restart wings${NC}"; exit 1; }
+  sudo systemctl restart mysql || { echo -e "${RED}[ERROR] Gagal restart mysql${NC}"; exit 1; }
+
   #tar -cvpzf backup.tar.gz /etc/letsencrypt /var/www/pterodactyl /etc/nginx/sites-available/pterodactyl.conf
   #tar -cvzf node.tar.gz /var/lib/pterodactyl /etc/pterodactyl
 
