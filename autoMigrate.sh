@@ -62,11 +62,12 @@ backup_panel() {
   read -p "IP VPS: " ip_vps
   echo -e "[INFO] Masukkan User VPS:" 
   read -p "USER VPS: " user_vps
-  rsync -az --progress "$user_vps"@"$ip_vps":/var/www/pterodactyl /var/www/
-  rsync -az --progress "$user_vps"@"$ip_vps":/etc/letsencrypt /etc/
-  rsync -az --progress "$user_vps"@"$ip_vps":/var/lib/pterodactyl /var/lib/
-  rsync -az --progress "$user_vps"@"$ip_vps":/etc/pterodactyl /etc/
-  scp "$user_vps"@"$ip_vps":/etc/nginx/sites-available/pterodactyl.conf /etc/nginx/sites-available/
+  rsync -az --progress "$user_vps"@"$ip_vps":/var/www/pterodactyl /var/www/ || { echo -e "${RED}[ERROR] Gagal mentransfer /var/www/pterodactyl${NC}"; exit 1; }
+  rsync -az --progress "$user_vps"@"$ip_vps":/etc/letsencrypt /etc/ || { echo -e "${RED}[ERROR] Gagal mentransfer /etc/letsencrypt${NC}"; exit 1; }
+  rsync -az --progress "$user_vps"@"$ip_vps":/var/lib/pterodactyl /var/lib/ || { echo -e "${RED}[ERROR] Gagal mentransfer /var/lib/pterodactyl${NC}"; exit 1; }
+  rsync -az --progress "$user_vps"@"$ip_vps":/etc/pterodactyl /etc/ || { echo -e "${RED}[ERROR] Gagal mentransfer /etc/pterodactyl${NC}"; exit 1; }
+  scp "$user_vps"@"$ip_vps":/etc/nginx/sites-available/pterodactyl.conf /etc/nginx/sites-available/ || { echo -e "${RED}[ERROR] Gagal mentransfer /etc/nginx/sites-available/pterodactyl.conf${NC}"; exit 1; }
+  scp -o StrictHostKeyChecking=no -o LogLevel=ERROR "$user_vps"@"$ip_vps":/panel.sql / || { echo -e "${RED}[ERROR] Gagal mentransfer panel.sql${NC}"; exit 1; }
 
   #tar -cvpzf backup.tar.gz /etc/letsencrypt /var/www/pterodactyl /etc/nginx/sites-available/pterodactyl.conf
   #tar -cvzf node.tar.gz /var/lib/pterodactyl /etc/pterodactyl
