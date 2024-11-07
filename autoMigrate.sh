@@ -116,9 +116,9 @@ migrate_panel() {
 
   # Transfer backup files and check if the transfer was successful
   echo -e "${BLUE}[INFO] Mentransfer file backup dari $ip_vps ...${NC}"
-  scp -o StrictHostKeyChecking=no -o LogLevel=ERROR IchanZX@"$ip_vps":/home/IchanZX/backup.tar.gz / || { echo -e "${RED}[ERROR] Gagal mentransfer backup.tar.gz${NC}"; exit 1; }
-  scp -o StrictHostKeyChecking=no -o LogLevel=ERROR IchanZX@"$ip_vps":/home/IchanZX/node.tar.gz / || { echo -e "${RED}[ERROR] Gagal mentransfer node.tar.gz${NC}"; exit 1; }
-  scp -o StrictHostKeyChecking=no -o LogLevel=ERROR IchanZX@"$ip_vps":/panel.sql / || { echo -e "${RED}[ERROR] Gagal mentransfer panel.sql${NC}"; exit 1; }
+  scp -o StrictHostKeyChecking=no -o LogLevel=ERROR root@"$ip_vps":/root/backup.tar.gz / || { echo -e "${RED}[ERROR] Gagal mentransfer backup.tar.gz${NC}"; exit 1; }
+  scp -o StrictHostKeyChecking=no -o LogLevel=ERROR root@"$ip_vps":/root/node.tar.gz / || { echo -e "${RED}[ERROR] Gagal mentransfer node.tar.gz${NC}"; exit 1; }
+  scp -o StrictHostKeyChecking=no -o LogLevel=ERROR root@"$ip_vps":/panel.sql / || { echo -e "${RED}[ERROR] Gagal mentransfer panel.sql${NC}"; exit 1; }
 
   # Extract the transferred files
   echo -e "[INFO] Mengekstrak file backup ...${NC}"
