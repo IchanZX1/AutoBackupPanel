@@ -49,6 +49,28 @@ check_token() {
   clear
 }
 
+# Restarting Wings PANEL
+restart_wings() {
+echo -e ""
+  echo -e "${BLUE}[+] =============================================== [+]${NC}"
+  echo -e "${BLUE}[+]               MEMULAI BACKUP PANEL                 [+]${NC}"
+  echo -e "${BLUE}[+] =============================================== [+]${NC}"
+  echo -e ""
+
+systemctl stop wings
+sleep 30
+systemctl start wings
+
+echo -e ""
+  echo -e "${GREEN}[+] =============================================== [+]${NC}"
+  echo -e "${GREEN}[+]               BACKUP PANEL SUKSES             [+]${NC}"
+  echo -e "${GREEN}[+] =============================================== [+]${NC}"
+  echo -e ""
+  sleep 2
+  clear
+  exit 0
+}
+
 # Backup NodeJS MYSQL PANEL
 backup_panel() {
   echo -e ""
@@ -132,6 +154,7 @@ while true; do
   echo -e "SELECT OPTION :"
   echo "1. Backup panel"
   echo "2. Pindahkan panel"
+  echo "3. Restart Wings"
   echo "x. Exit"
   echo -e "Masukkan pilihan (1/2/x):"
   read -r MENU_CHOICE
@@ -143,6 +166,9 @@ while true; do
       ;;
     2)
       migrate_panel
+      ;;
+    3)
+      restart_wings
       ;;
     x)
       echo "Keluar dari skrip."
