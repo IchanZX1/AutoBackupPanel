@@ -53,7 +53,7 @@ check_token() {
 restart_wings() {
 echo -e ""
   echo -e "${BLUE}[+] =============================================== [+]${NC}"
-  echo -e "${BLUE}[+]               MEMULAI BACKUP PANEL                 [+]${NC}"
+  echo -e "${BLUE}[+]           MEMULAI RESTARTING WINGS              [+]${NC}"
   echo -e "${BLUE}[+] =============================================== [+]${NC}"
   echo -e ""
 
@@ -63,7 +63,7 @@ systemctl start wings
 
 echo -e ""
   echo -e "${GREEN}[+] =============================================== [+]${NC}"
-  echo -e "${GREEN}[+]               BACKUP PANEL SUKSES             [+]${NC}"
+  echo -e "${GREEN}[+]           RESTARTING WINGS SELESAI              [+]${NC}"
   echo -e "${GREEN}[+] =============================================== [+]${NC}"
   echo -e ""
   sleep 2
