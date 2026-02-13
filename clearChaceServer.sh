@@ -35,7 +35,6 @@ progress_bar() {
 }
 
 # ===============================
-# ===============================
 # AUTO CLEANUP IF DISK > 80%
 # ===============================
 check_disk_auto() {
@@ -73,7 +72,7 @@ echo "╔═══════════════════════�
 echo "║            ZxcoderID Tools PRO+             ║"
 echo "║          Interactive System Manager         ║"
 echo "╚══════════════════════════════════════════════╝"
-echo "     By: IchanZX-Informatics "
+echo "	   By: IchanZX-Informatics "
 echo "${RESET}"
 }
 
